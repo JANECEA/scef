@@ -1,6 +1,6 @@
 # scef
 
-Fixes a weird encoding issue I've encountered when copying files.
+Fixes a weird encoding issue I've encountered when copying text.
 
 Turns
 ```
