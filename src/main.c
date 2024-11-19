@@ -13,7 +13,7 @@ wint_t combine_chars(enum DiacriticType dtype, wint_t ch) {
         return combine_with_circle(ch);
     case UMLAUT:
         return combine_with_umlaut(ch);
-    case NONE:
+    default:
         return WEOF;
     }
 }
@@ -53,7 +53,7 @@ void process_char(wint_t ch) {
         wprintf(L"%lc%lc", diacritic, next_char);
 }
 
-int main(int argc, char *argv[]) {
+int main() {
     setlocale(LC_CTYPE, "");
 
     wint_t ch;
