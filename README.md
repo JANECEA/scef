@@ -8,7 +8,7 @@ Toto je ˇcesky psan´y text s diakritikou.
 
 M˚uˇze obsahovat i 'umlaut', ˇcili: ¨a, ¨o nebo ¨u.
 
-Samotn´a diakritika zustane nezmˇenˇena: 'ˇ', '´', '"', '˚'. 
+Samotn´a diakritika z˚ustane nezmˇenˇena: 'ˇ', '´', '"', '˚'. 
 ```
 Into
 ```
