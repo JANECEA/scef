@@ -3,6 +3,15 @@
 #include <wchar.h>
 #include <wctype.h>
 
+wint_t check_special_cases(wint_t first_char, wint_t second_char) {
+    for (long unsigned int i = 0; i < SPECIAL_CASES_COUNT; i++) {
+        if (first_char == first_chars[i] && second_char == second_chars[i]) {
+            return result_chars[i];
+        }
+    }
+    return WEOF;
+}
+
 wint_t combine_chars(enum DiacriticType dtype, wint_t ch) {
     switch (dtype) {
     case HOOK:
@@ -27,38 +36,48 @@ enum DiacriticType get_diacritic_type(wint_t ch) {
     case L'˚':
         return CIRCLE;
     case L'¨':
+    case L'˝':
         return UMLAUT;
     default:
         return NONE;
     }
 }
 
-void process_char(wint_t ch) {
-    enum DiacriticType dtype;
-    if ((dtype = get_diacritic_type(ch)) == NONE) {
-        wprintf(L"%lc", ch);
-        return;
-    }
-    wint_t diacritic = ch;
-    wint_t next_char;
-    if ((next_char = getwchar()) == WEOF) {
-        wprintf(L"%lc", diacritic);
-        return;
+CombinedReturn process_chars(wint_t first_char, wint_t second_char) {
+    CombinedReturn not_combined = {False, first_char};
+    enum DiacriticType dtype = get_diacritic_type(first_char);
+
+    wint_t result;
+    if (dtype != NONE && (result = combine_chars(dtype, second_char)) != WEOF) {
+        CombinedReturn combined = {True, result};
+        return combined;
     }
 
-    wint_t result = combine_chars(dtype, next_char);
-    if (result != WEOF)
-        wprintf(L"%lc", result);
-    else
-        wprintf(L"%lc%lc", diacritic, next_char);
+    wint_t special_case = check_special_cases(first_char, second_char);
+    if (special_case != WEOF) {
+        CombinedReturn combined = {True, special_case};
+        return combined;
+    }
+    return not_combined;
 }
 
 int main() {
     setlocale(LC_CTYPE, "");
 
-    wint_t ch;
-    while ((ch = getwchar()) != WEOF)
-        process_char(ch);
+    wint_t first_char = getwchar();
+    wint_t second_char = getwchar();
+    while (first_char != WEOF) {
+        CombinedReturn result = process_chars(first_char, second_char);
+        wprintf(L"%lc", result.character);
+
+        if (result.is_combined == True) {
+            first_char = getwchar();
+            second_char = getwchar();
+        } else {
+            first_char = second_char;
+            second_char = getwchar();
+        }
+    }
 
     return 0;
 }
